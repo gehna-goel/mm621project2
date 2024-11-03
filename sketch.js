@@ -1,4 +1,4 @@
-//assistance taken from The coding train to understand concepts, Youtube - https://www.youtube.com/watch?v=hokTcLVtZs8, https://www.youtube.com/watch?v=bpEJrfOiqZg, https://www.youtube.com/watch?v=qZ2toGfv7ZQ,  and chatGPT to help customize my code 
+//assistance taken from The coding train to understand concepts, Youtube - https://www.youtube.com/watch?v=hokTcLVtZs8, https://www.youtube.com/watch?v=bpEJrfOiqZg, https://www.youtube.com/watch?v=qZ2toGfv7ZQ, and chatGPT to help customize my code 
 
 let grapeData;
 let grapeCounts = {};
@@ -78,3 +78,4 @@ function getRandomPosition(diameter) {
   } while (overlap);
   return { x: posX, y: posY };
 }
+
