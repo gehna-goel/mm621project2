@@ -2,65 +2,78 @@
 
 let grapeData;
 let grapeCounts = {};
-let circles = [];
-let margin = 50; 
+let grapes = [];
+let margin = 50;
+let grapeImage;
 
 function preload() {
-  // Load the CSV file
+  // loading the CSV file
   grapeData = loadTable('WineDataset.csv', 'csv', 'header');
+  
+  // load grape image
+  grapeImage = loadImage('grape.png'); // grape image
 }
 
 function setup() {
   let canvas = createCanvas(windowWidth, windowHeight);
-  canvas.parent("project"); // To host this project on github
-  background(255, 230, 250); 
-  
+  canvas.parent("project"); // to host this project on GitHub
+  background(255, 230, 250);
+
   // count the names of each grape type and create circles
   for (let r = 0; r < grapeData.getRowCount(); r++) {
     let grapeType = grapeData.getString(r, 'Grape');
     grapeCounts[grapeType] = (grapeCounts[grapeType] || 0) + 1;
   }
 
-  // find max and min counts 
+  // find max and min counts
   let counts = Object.values(grapeCounts);
   let maxCount = Math.max(...counts);
   let minCount = Math.min(...counts);
   let maxSize = 200;
-  let minSize = 20;
+  let minSize = 50;
 
   // generate circles with random positions and random colors in each refresh
   for (let grapeType in grapeCounts) {
     let count = grapeCounts[grapeType];
-    let diameter = map(count, minCount, maxCount, minSize, maxSize);
-    let pos = getRandomPosition(diameter);
+    let size = map(count, minCount, maxCount, minSize, maxSize);
+    let pos = getRandomPosition(size);
 
-    circles.push({
+    grapes.push({
       grapeType,
-      diameter,
+      size,
       posX: pos.x,
-      posY: pos.y,
-      color: color(random(255), random(255), random(255), 150) // random color for each grape type
+      posY: pos.y
     });
   }
 }
 
 function draw() {
-  background(255, 230, 250); 
+  background(255, 230, 250);
 
-  noStroke();
-  
-  for (let circle of circles) {
-    fill(circle.color); 
-    ellipse(circle.posX, circle.posY, circle.diameter, circle.diameter);
+  for (let grape of grapes) {
+    imageMode(CENTER);
+    image(grapeImage, grape.posX, grape.posY, grape.size, grape.size);
 
-    // check if the mouse is over this circle
-    let d = dist(mouseX, mouseY, circle.posX, circle.posY);
-    if (d < circle.diameter / 2) {
-      // display grape name when hovering
-      fill(70);
+    // to xheck if the mouse is over this circle
+    let d = dist(mouseX, mouseY, grape.posX, grape.posY);
+    if (d < grape.size / 2) {
+      // grape name with a white highlight when hovering
       textSize(14);
       textAlign(CENTER, CENTER);
-      text(circle.grapeType, circle.posX, circle.posY);
+
+      // Calculate the dimensions of the text
+      let textWidthValue = textWidth(grape.grapeType) + 10; // Add padding
+      let textHeightValue = 20;
+
+      // draw the white rectangle behind the text
+      fill(255);
+      noStroke();
+      rectMode(CENTER);
+      rect(grape.posX, grape.posY - grape.size / 2 - 10, textWidthValue, textHeightValue);
+
+      // draw the text
+      fill(70);
+      text(grape.grapeType, grape.posX, grape.posY - grape.size / 2 - 10);
       cursor(HAND); // change cursor to hand when hovering
     } else {
       cursor(ARROW); // reset cursor when not hovering
@@ -68,14 +81,13 @@ function draw() {
   }
 }
 
-// get random position for circle, ensuring no overlap
-function getRandomPosition(diameter) {
+// random position for grapes, with no overlap
+function getRandomPosition(size) {
   let posX, posY, overlap;
   do {
-    posX = random(margin + diameter / 2, width - margin - diameter / 2);
-    posY = random(margin + diameter / 2, height - margin - diameter / 2);
-    overlap = circles.some(circle => dist(posX, posY, circle.posX, circle.posY) < (circle.diameter / 2 + diameter / 2));
+    posX = random(margin + size / 2, width - margin - size / 2);
+    posY = random(margin + size / 2, height - margin - size / 2);
+    overlap = grapes.some(grape => dist(posX, posY, grape.posX, grape.posY) < (grape.size / 2 + size / 2));
   } while (overlap);
   return { x: posX, y: posY };
 }
-
